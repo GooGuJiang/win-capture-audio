@@ -22,3 +22,18 @@ Internally it uses [ActivateAudioInterfaceAsync](https://docs.microsoft.com/en-u
 - **Application Audio Output Capture source not showing up after install:** this means that either your OBS is out-of-date (check that it is at least 27.1.x) or you have installed the plugin to the wrong location. To re-install, first uninstall via "Add or remove programs" in the Windows settings, and then run the installer again. Make sure to select the top-level `obs-studio/` folder in (probably) `C:/Program Files/`.
 
 - **Application Audio Output Capture source not picking up any audio:** this happens when your Windows is too old and does not have support for the API. Note that even if you have a more recent major version such as `20H2` you will still need the latest updates for the plugin to work. If you are on a very old version you might need more than one update for this to work, and the second update might not show up for a few days after the first update.
+
+## Python Usage
+
+The repository also builds a lightweight DLL that exposes a minimal C API so it can be loaded from Python. After building `win-capture-audio-wrapper.dll`, you can capture audio from a specific process using `ctypes`:
+
+```python
+from samples.python_capture import Capture
+
+# replace 1234 with the PID of the target application
+cap = Capture(1234)
+audio = cap.read(cap.rate * 5)  # read five seconds of audio
+cap.close()
+```
+
+See [`samples/python_capture.py`](samples/python_capture.py) for a complete example that writes the captured data to `capture.wav`.
