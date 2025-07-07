@@ -69,3 +69,13 @@ add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
 
     VERBATIM
 )
+
+add_library(win-capture-audio-wrapper SHARED
+    src/wrapper.cpp
+    src/audio-capture-helper.cpp
+    src/mixer-wrapper.cpp
+)
+set_property(TARGET win-capture-audio-wrapper PROPERTY CXX_STANDARD 23)
+target_compile_definitions(win-capture-audio-wrapper PRIVATE BUILD_WRAPPER)
+target_include_directories(win-capture-audio-wrapper PUBLIC ${CMAKE_SOURCE_DIR}/deps/wil/include)
+target_link_libraries(win-capture-audio-wrapper dwmapi ksuser mmdevapi)
