@@ -6,7 +6,8 @@
 #include <thread>
 #include <set>
 
-#include <windows.h>
+
+#include "common.hpp"
 
 #include <audiopolicy.h>
 #include <audioclient.h>
@@ -17,7 +18,6 @@
 #include <wil/com.h>
 
 #include "mixer.hpp"
-#include "common.hpp"
 
 using namespace Microsoft::WRL;
 

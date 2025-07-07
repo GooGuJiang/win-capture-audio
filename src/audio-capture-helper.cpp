@@ -1,5 +1,5 @@
 #include <functional>
-#include <windows.h>
+#include "common.hpp"
 
 #include <stdint.h>
 #include <stdbool.h>
