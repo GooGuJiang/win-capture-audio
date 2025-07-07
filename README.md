@@ -25,15 +25,17 @@ Internally it uses [ActivateAudioInterfaceAsync](https://docs.microsoft.com/en-u
 
 ## Python Usage
 
-The repository also builds a lightweight DLL that exposes a minimal C API so it can be loaded from Python. After building `win-capture-audio-wrapper.dll`, you can capture audio from a specific process using `ctypes`:
+The repository also builds a lightweight DLL that exposes a minimal C API. The helper module [`samples/wca.py`](samples/wca.py) wraps this DLL with an easy to use interface.
 
 ```python
-from samples.python_capture import Capture
+from samples.wca import Capture, record_to_wav
 
-# replace 1234 with the PID of the target application
-cap = Capture(1234)
-audio = cap.read(cap.rate * 5)  # read five seconds of audio
-cap.close()
+# Save five seconds of audio from the given PID
+record_to_wav(1234, 5, "capture.wav")
+
+# Or use the class directly
+with Capture(1234) as cap:
+    data = cap.read(cap.rate * 5)
 ```
 
-See [`samples/python_capture.py`](samples/python_capture.py) for a complete example that writes the captured data to `capture.wav`.
+See [`samples/wca.py`](samples/wca.py) for the implementation and additional usage details.
