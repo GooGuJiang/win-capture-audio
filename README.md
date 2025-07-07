@@ -1,4 +1,4 @@
-# win-capture-audio-py
+# win-capture-audio-dll
 
 这是一个基于 [win-capture-audio](https://github.com/bozbez/win-capture-audio) 项目提取出的 DLL 接口，可用于从指定进程捕获音频流，适用于需要在 Python 中采集特定应用程序音频的场景。
 
@@ -11,7 +11,6 @@
 ## 环境要求
 
 * Windows 10 2004（2020 年 5 月）及以上版本（推荐 Windows 11）
-* Python 3.7+
 * 已编译的 `win-capture-audio-wrapper.dll`
 
 ---
