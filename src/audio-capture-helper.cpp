@@ -11,7 +11,9 @@
 #include <wil/result_macros.h>
 
 #include "audio-capture-helper.hpp"
+#ifndef BUILD_WRAPPER
 #include "format-conversion.hpp"
+#endif
 
 AUDIOCLIENT_ACTIVATION_PARAMS AudioCaptureHelper::GetParams()
 {
