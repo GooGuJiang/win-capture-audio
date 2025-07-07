@@ -1,11 +1,24 @@
 #pragma once
 
-#include <util/platform.h>
 #include <windows.h>
 #include <stdio.h>
 #include <stdint.h>
 
+#ifndef BUILD_WRAPPER
+#include <util/platform.h>
 #include <obs.h>
+#else
+#include <stdarg.h>
+
+enum { LOG_DEBUG, LOG_INFO, LOG_WARNING, LOG_ERROR };
+
+inline static void blogva(int level, const char *format, va_list args)
+{
+	(void)level;
+	vfprintf(stderr, format, args);
+	fprintf(stderr, "\n");
+}
+#endif
 
 #define do_log(level, format, ...) \
 	do_log_source(level, "[win-capture-audio] (%s) " format, __func__, ##__VA_ARGS__)
