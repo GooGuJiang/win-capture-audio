@@ -6,11 +6,18 @@ from wca import record_to_wav
 def main():
     import sys
     if len(sys.argv) < 2:
-        print('Usage: python python_capture.py <pid>')
+        print('Usage: python python_capture.py <pid|process.exe>')
         return
 
-    pid = int(sys.argv[1])
-    record_to_wav(pid, 5, 'capture.wav')
+    target = sys.argv[1]
+    try:
+        pid = int(target)
+        name = None
+    except ValueError:
+        pid = None
+        name = target
+
+    record_to_wav(pid=pid, name=name, seconds=5, filename='capture.wav')
     print('Wrote capture.wav')
 
 

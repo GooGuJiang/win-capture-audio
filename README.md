@@ -25,17 +25,21 @@ Internally it uses [ActivateAudioInterfaceAsync](https://docs.microsoft.com/en-u
 
 ## Python Usage
 
-The repository also builds a lightweight DLL that exposes a minimal C API. The helper module [`samples/wca.py`](samples/wca.py) wraps this DLL with an easy to use interface.
+The repository also builds a lightweight DLL that exposes a minimal C API. The helper module [`samples/wca.py`](samples/wca.py) wraps this DLL with an easy to use interface. It can resolve a process by name and stream audio chunks for real-time processing.
 
 ```python
 from samples.wca import Capture, record_to_wav
 
 # Save five seconds of audio from the given PID
-record_to_wav(1234, 5, "capture.wav")
+record_to_wav(pid=1234, seconds=5, filename="capture.wav")
+
+# Or capture by executable name
+record_to_wav(name="chrome.exe", seconds=5, filename="chrome.wav")
 
 # Or use the class directly
-with Capture(1234) as cap:
-    data = cap.read(cap.rate * 5)
+with Capture(name="notepad.exe") as cap:
+    for chunk in cap.stream():
+        process(chunk)  # do something with audio data
 ```
 
 See [`samples/wca.py`](samples/wca.py) for the implementation and additional usage details.
