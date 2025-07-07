@@ -13,7 +13,7 @@ jobs:
       matrix:
         arch: [x64, Win32]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: true
       - name: Configure

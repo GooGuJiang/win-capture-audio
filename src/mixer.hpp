@@ -1,7 +1,5 @@
 #pragma once
 
-#include "common.hpp"
-
 #include <thread>
 #ifdef BUILD_WRAPPER
 #include <deque>
@@ -10,7 +8,10 @@
 #include <vector>
 #endif
 
+#include <windows.h>
 #include <wil/resource.h>
+
+#include "common.hpp"
 #ifndef BUILD_WRAPPER
 #include <obs.h>
 #endif

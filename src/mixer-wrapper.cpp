@@ -1,5 +1,4 @@
 #include "mixer.hpp"
-#include <algorithm>
 #ifdef BUILD_WRAPPER
 
 Mixer::Mixer(WAVEFORMATEX fmt) : format(fmt) {}
@@ -25,4 +24,3 @@ size_t Mixer::Read(float *out, size_t frames)
 }
 
 #endif
-
