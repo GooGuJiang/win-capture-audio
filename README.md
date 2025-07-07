@@ -1,27 +1,25 @@
-# win-capture-audio
+# win-capture-audio-dll
 
-An OBS plugin similar to OBS's win-capture/game-capture that allows for audio capture from a specific application, rather than the system's audio as a whole. This eliminates the need for third-party software or hardware audio mixing tools that introduce complexity, and in the case of software tools, introduce mandatory latency.
+这是一个基于 [win-capture-audio](https://github.com/bozbez/win-capture-audio) 项目提取出的 DLL 接口，可用于从指定进程捕获音频流，适用于需要在 Python 中采集特定应用程序音频的场景。
 
-Internally it uses [ActivateAudioInterfaceAsync](https://docs.microsoft.com/en-us/windows/win32/api/mmdeviceapi/nf-mmdeviceapi-activateaudiointerfaceasync) with [AUDIOCLIENT_PROCESS_LOOPBACK_PARAMS](https://docs.microsoft.com/en-us/windows/win32/api/audioclientactivationparams/ns-audioclientactivationparams-audioclient_process_loopback_params). This initialization structure is only officially available on Windows 11, however it appears to work additionally on relatively recent versions of Windows 10.
+其底层基于 Windows 的 [ActivateAudioInterfaceAsync](https://docs.microsoft.com/en-us/windows/win32/api/mmdeviceapi/nf-mmdeviceapi-activateaudiointerfaceasync) API，结合 [AUDIOCLIENT_PROCESS_LOOPBACK_PARAMS](https://docs.microsoft.com/en-us/windows/win32/api/audioclientactivationparams/ns-audioclientactivationparams-audioclient_process_loopback_params) 结构实现，能够直接捕获某一进程的输出音频，而不是系统整体输出。
 
-**This plugin is in a BETA state, expect issues - [https://discord.gg/4D5Yk5gFnM](https://discord.gg/4D5Yk5gFnM) for support and updates.**<br/>
-**An updated version of Windows 10 2004 (released 2020-05-27) or later is required.**
+> ⚠️ 注意：该功能官方仅在 Windows 11 支持，但经测在部分更新后的 Windows 10（如 2004 及以上）中也可以正常使用。
 
-**Want to support the development of the plugin? [https://ko-fi.com/bozbez](https://ko-fi.com/bozbez)**
+## 环境要求
 
-![overview](https://raw.githubusercontent.com/bozbez/win-capture-audio/main/media/overview.png)
+- Windows 10 2004（2020 年 5 月）及以上版本（推荐 Windows 11）
+- 已编译的 `win-capture-audio-wrapper.dll`
 
-## Installation and Usage
+## 功能特点
 
-1. Head over to the [Releases](https://github.com/bozbez/win-capture-audio/releases) page and download the latest installer (or zip if you are using a portable installation)
-2. Run the setup wizard, selecting your root OBS folder (`obs-studio/`, _not_ `obs-studio/obs-plugins/`) when asked (or extract the zip to the portable OBS root directory)
-3. Launch OBS and check out the newly available "Application Audio Output Capture" source
+- 低延迟：不依赖 WASAPI Loopback 或虚拟声卡，直接内部环回目标进程音频
+- 精准：仅采集指定进程，不影响系统或其他应用
+- 可嵌入：适合集成进 Python 应用或 AI 音频分析工具链
 
-## Troubleshooting
+## 获取 DLL
 
-- **Application Audio Output Capture source not showing up after install:** this means that either your OBS is out-of-date (check that it is at least 27.1.x) or you have installed the plugin to the wrong location. To re-install, first uninstall via "Add or remove programs" in the Windows settings, and then run the installer again. Make sure to select the top-level `obs-studio/` folder in (probably) `C:/Program Files/`.
-
-- **Application Audio Output Capture source not picking up any audio:** this happens when your Windows is too old and does not have support for the API. Note that even if you have a more recent major version such as `20H2` you will still need the latest updates for the plugin to work. If you are on a very old version you might need more than one update for this to work, and the second update might not show up for a few days after the first update.
+前往 [Releases](../../releases) 页面可以获取最新的 `win-capture-audio-wrapper.dll`，与 `samples` 目录中的脚本放在同一位置后即可被 `wca.py` 自动加载。
 
 ## Python Usage
 
