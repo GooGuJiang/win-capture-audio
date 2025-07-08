@@ -1,5 +1,5 @@
 #include <functional>
-#include <windows.h>
+#include "common.hpp"
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -11,7 +11,9 @@
 #include <wil/result_macros.h>
 
 #include "audio-capture-helper.hpp"
+#ifndef BUILD_WRAPPER
 #include "format-conversion.hpp"
+#endif
 
 AUDIOCLIENT_ACTIVATION_PARAMS AudioCaptureHelper::GetParams()
 {
@@ -48,19 +50,28 @@ void AudioCaptureHelper::InitClient()
 	wil::com_ptr<IActivateAudioInterfaceAsyncOperation> async_op;
 	CompletionHandler completion_handler;
 
-	THROW_IF_FAILED(ActivateAudioInterfaceAsync(VIRTUAL_AUDIO_DEVICE_PROCESS_LOOPBACK,
-						    __uuidof(IAudioClient), &propvariant,
-						    &completion_handler, &async_op));
+        THROW_IF_FAILED(ActivateAudioInterfaceAsync(VIRTUAL_AUDIO_DEVICE_PROCESS_LOOPBACK,
+                                                    __uuidof(IAudioClient), &propvariant,
+                                                    &completion_handler, &async_op));
 
 	completion_handler.event_finished.wait();
 	THROW_IF_FAILED(completion_handler.activate_hr);
 
-	client = completion_handler.client;
+        client = completion_handler.client;
 
-	THROW_IF_FAILED(
-		client->Initialize(AUDCLNT_SHAREMODE_SHARED,
-				   AUDCLNT_STREAMFLAGS_LOOPBACK | AUDCLNT_STREAMFLAGS_EVENTCALLBACK,
-				   5 * 10000000, 0, &format, NULL));
+        WAVEFORMATEX *closest = nullptr;
+        HRESULT hr = client->IsFormatSupported(AUDCLNT_SHAREMODE_SHARED, &format, &closest);
+        if (hr == S_FALSE && closest) {
+                format = *closest;
+                CoTaskMemFree(closest);
+        } else {
+                THROW_IF_FAILED(hr);
+        }
+
+        THROW_IF_FAILED(
+                client->Initialize(AUDCLNT_SHAREMODE_SHARED,
+                                   AUDCLNT_STREAMFLAGS_LOOPBACK | AUDCLNT_STREAMFLAGS_EVENTCALLBACK,
+                                   5 * 10000000, 0, &format, NULL));
 
 	THROW_IF_FAILED(client->SetEventHandle(events[HelperEvents::PacketReady].get()));
 }

@@ -1,15 +1,19 @@
 #pragma once
 
+#include "common.hpp"
+
 #include <thread>
+#ifdef BUILD_WRAPPER
+#include <deque>
+#else
 #include <queue>
 #include <vector>
+#endif
 
-#include <windows.h>
 #include <wil/resource.h>
-
+#ifndef BUILD_WRAPPER
 #include <obs.h>
-
-#include "common.hpp"
+#endif
 
 namespace MixerEvents {
 enum MixerEvents {
@@ -17,6 +21,26 @@ enum MixerEvents {
 	Tick,
 };
 }
+
+#ifdef BUILD_WRAPPER
+
+class Mixer {
+private:
+	WAVEFORMATEX format;
+	wil::critical_section buffer_section;
+	std::deque<float> buffer;
+
+public:
+	Mixer(WAVEFORMATEX format);
+	~Mixer();
+
+	void SubmitPacket(UINT64 timestamp, float *data, UINT32 num_frames);
+	size_t Read(float *data, size_t frames);
+	WORD Channels() const { return format.nChannels; }
+	WAVEFORMATEX GetFormat() const { return format; }
+};
+
+#else
 
 class Mixer {
 private:
@@ -64,3 +88,5 @@ public:
 	Mixer(obs_source_t *source, WAVEFORMATEX format);
 	~Mixer();
 };
+
+#endif
